@@ -169,6 +169,34 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Player Actions"",
+            ""id"": ""2b199ab0-111f-4a89-9983-7697b18aef3f"",
+            ""actions"": [
+                {
+                    ""name"": ""Shift"",
+                    ""type"": ""Button"",
+                    ""id"": ""e13744c3-866b-4b38-9ec6-b8927687c7c6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""c656cb1b-0432-4d81-8ff9-381aee4611cb"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -177,6 +205,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_PlayerMovement = asset.FindActionMap("Player Movement", throwIfNotFound: true);
         m_PlayerMovement_Movement = m_PlayerMovement.FindAction("Movement", throwIfNotFound: true);
         m_PlayerMovement_Camera = m_PlayerMovement.FindAction("Camera", throwIfNotFound: true);
+        // Player Actions
+        m_PlayerActions = asset.FindActionMap("Player Actions", throwIfNotFound: true);
+        m_PlayerActions_Shift = m_PlayerActions.FindAction("Shift", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -273,9 +304,46 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         }
     }
     public PlayerMovementActions @PlayerMovement => new PlayerMovementActions(this);
+
+    // Player Actions
+    private readonly InputActionMap m_PlayerActions;
+    private IPlayerActionsActions m_PlayerActionsActionsCallbackInterface;
+    private readonly InputAction m_PlayerActions_Shift;
+    public struct PlayerActionsActions
+    {
+        private @PlayerControls m_Wrapper;
+        public PlayerActionsActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Shift => m_Wrapper.m_PlayerActions_Shift;
+        public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PlayerActionsActions set) { return set.Get(); }
+        public void SetCallbacks(IPlayerActionsActions instance)
+        {
+            if (m_Wrapper.m_PlayerActionsActionsCallbackInterface != null)
+            {
+                @Shift.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnShift;
+                @Shift.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnShift;
+                @Shift.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnShift;
+            }
+            m_Wrapper.m_PlayerActionsActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Shift.started += instance.OnShift;
+                @Shift.performed += instance.OnShift;
+                @Shift.canceled += instance.OnShift;
+            }
+        }
+    }
+    public PlayerActionsActions @PlayerActions => new PlayerActionsActions(this);
     public interface IPlayerMovementActions
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnCamera(InputAction.CallbackContext context);
+    }
+    public interface IPlayerActionsActions
+    {
+        void OnShift(InputAction.CallbackContext context);
     }
 }
