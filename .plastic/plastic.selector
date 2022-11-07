@@ -1,4 +1,0 @@
-repository "Medieval Assassination@Kuhageims@cloud"
-  path "/"
-    br "/main"
-    co "/main"
