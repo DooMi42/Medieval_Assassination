@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyAI1 : MonoBehaviour
+public class EnemyAI : MonoBehaviour
 {
 
     public NavMeshAgent agent;
@@ -14,11 +14,17 @@ public class EnemyAI1 : MonoBehaviour
     
     public EnemyVision vision;
 
+    public GameObject[] patrolPoints;
+    
+
 
     //kävely ympäriinsä
     public Vector3 walkPoint;
     bool walkPointSet;
     public float walkPointRange;
+    public int idleTime;
+    public bool reachedPoint;
+
 
     //hyökkääminen
     public float timeBetweenAttacks;
@@ -37,14 +43,16 @@ public class EnemyAI1 : MonoBehaviour
 
     private void Update()
     {
-        //onko peluri -sihti- ja attack rangessa6
+        
+        //onko peluri -sihti- ja attack rangessa
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);  
 
-        if (!vision.angry && !playerInAttackRange) Patrolling(); 
+        if (!vision.angry && !playerInAttackRange) Invoke (nameof(Patrolling2), idleTime);
         if (vision.angry && !playerInAttackRange) ChasePlayer(); 
         if (vision.angry && playerInAttackRange) AttackPlayer();
         if (vision.angry && !playerInAttackRange && !playerInSightRange) Invoke(nameof(Disengage), timeToCalm);
+        Debug.Log(patrolPoints.Length);
     }
 
 
@@ -62,13 +70,39 @@ public class EnemyAI1 : MonoBehaviour
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
 
         //walkpointiin saavuttu
-        if (distanceToWalkPoint.magnitude < 1f)
+        if (distanceToWalkPoint.magnitude < 1.5f)
+        {
             walkPointSet = false;
+            Debug.Log("Walkpointiin saavuttu.");
+        }
+    
     }
+    private void Patrolling2()
+    {
+        for (int i = 0; i < patrolPoints.Length; i++)
+        {
+            reachedPoint = false;
+            Debug.Log(i);
+ 
+            walkPoint = new Vector3(patrolPoints[i].transform.position.x, patrolPoints[i].transform.position.y, patrolPoints[i].transform.position.z);
+
+            agent.SetDestination(walkPoint);
+
+            Vector3 distanceToWalkPoint = transform.position - walkPoint;
+
+            if (distanceToWalkPoint.magnitude < 1.5f)
+            {
+                Debug.Log("Walkpointiin saavuttu.");
+                reachedPoint = true;
+            }
+        }
+    }
+
+
 
     private void SearchWalkPoint()
     {
-        //valitse satunnainen piste kentässä
+                //valitse satunnainen piste kentässä
         float randomZ = Random.Range(-walkPointRange, walkPointRange);
         float randomX = Random.Range(-walkPointRange, walkPointRange);
 
@@ -78,8 +112,8 @@ public class EnemyAI1 : MonoBehaviour
         {
             walkPointSet = true;
             Debug.DrawRay(walkPoint, -transform.up, Color.green);
-        }
-
+            
+        }    
     }
 
     private void ChasePlayer()
