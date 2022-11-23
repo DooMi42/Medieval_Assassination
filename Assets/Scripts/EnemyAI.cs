@@ -10,29 +10,32 @@ public class EnemyAI : MonoBehaviour
 
     public Transform player;
 
-    public LayerMask whatIsGround, whatIsPlayer;
+    public LayerMask whatIsGround, whatIsPlayer;    // kertoo navmeshille mikä on peluri ja mikä on maa 
     
-    public EnemyVision vision;
+    public EnemyVision vision;      // referenssi tötteröön vihollisen edessä (näkökenttä)
 
-    public GameObject[] patrolPoints;
+    public Transform[] patrolPoints;
     
 
 
     //kävely ympäriinsä
-    public Vector3 walkPoint;
+    public Vector3 walkPoint;   // kertoo navmesh jutulle missä walck point on
     bool walkPointSet;
-    public float walkPointRange;
-    public int idleTime;
-    public bool reachedPoint;
+    public float walkPointRange; // pois käytöstä mutta en jaksa kommentoida kaikkea pois 
+    public int idleTime;    // kuinka kauan pahis pysyy paikallaan patrol pisteessä
+    public bool reachedPoint;   // lippu onko päässyt pisteeseen, ei välttämättä tarpeellinen?
+    public int current;     // nykyinen patrol piste index
 
 
     //hyökkääminen
     public float timeBetweenAttacks;
-    public float timeToCalm = 7f;
+    public float timeToCalm = 7f;   // aika, jossa vihollinen menee chase tilasta takaisin patrol tilaan
     public bool alreadyAttacked;
 
     //states
-    public float attackRange, sightRange;
+    public float attackRange, sightRange;   // sight range on vihun ympärillä oleva alue, joka määrittää jatkaako vihollinen-
+                                            // -jahtaamista vai meneekö takaisin patrol tilaan
+
     public bool playerInAttackRange, playerInSightRange;
 
     private void Awake() 
@@ -48,7 +51,7 @@ public class EnemyAI : MonoBehaviour
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);  
 
-        if (!vision.angry && !playerInAttackRange) Invoke(nameof(Patrolling2), idleTime);
+        if (!vision.angry && !playerInAttackRange) Patrolling3();//Invoke(nameof(Patrolling3), idleTime);
         if (vision.angry && !playerInAttackRange) ChasePlayer(); 
         if (vision.angry && playerInAttackRange) AttackPlayer();
         if (vision.angry && !playerInAttackRange && !playerInSightRange) Invoke(nameof(Disengage), timeToCalm);
@@ -60,7 +63,7 @@ public class EnemyAI : MonoBehaviour
     {
         vision.angry = false;
     }
-    private void Patrolling()
+    private void Patrolling() //randomisti toimiva patrol homma, ei ihanteellinen mutta toimiva 0_0
     {
         if (!walkPointSet) SearchWalkPoint();
 
@@ -77,7 +80,7 @@ public class EnemyAI : MonoBehaviour
         }
     
     }
-    private void Patrolling2()
+    private void Patrolling2()      //for loopilla yritetty, en tiedä saako toimimaan
     {
         for (int i = 0; i < patrolPoints.Length; i++)
         {   
@@ -100,7 +103,19 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private void nextPoint(int i)
+    private void Patrolling3()
+    {
+        // netistä otettu :d
+        if (transform.position != patrolPoints[current].position)
+        {
+            walkPoint = patrolPoints[current].position;
+            agent.SetDestination(walkPoint);
+        } else {
+            current = (current + 1) % patrolPoints.Length;
+        }
+    }
+
+    private void nextPoint(int i)   // patrol2 käyttämä homma
     {
         if (i < 4)
         {
@@ -112,7 +127,7 @@ public class EnemyAI : MonoBehaviour
     }
 
 
-    private void SearchWalkPoint()
+    private void SearchWalkPoint() // rando
     {
                 //valitse satunnainen piste kentässä
         float randomZ = Random.Range(-walkPointRange, walkPointRange);
