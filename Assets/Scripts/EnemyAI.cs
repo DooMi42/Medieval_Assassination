@@ -48,11 +48,11 @@ public class EnemyAI : MonoBehaviour
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);  
 
-        if (!vision.angry && !playerInAttackRange) Invoke (nameof(Patrolling2), idleTime);
+        if (!vision.angry && !playerInAttackRange) Invoke(nameof(Patrolling2), idleTime);
         if (vision.angry && !playerInAttackRange) ChasePlayer(); 
         if (vision.angry && playerInAttackRange) AttackPlayer();
         if (vision.angry && !playerInAttackRange && !playerInSightRange) Invoke(nameof(Disengage), timeToCalm);
-        Debug.Log(patrolPoints.Length);
+        
     }
 
 
@@ -80,8 +80,9 @@ public class EnemyAI : MonoBehaviour
     private void Patrolling2()
     {
         for (int i = 0; i < patrolPoints.Length; i++)
-        {
-            reachedPoint = false;
+        {   
+         if (!walkPointSet)
+            {
             Debug.Log(i);
  
             walkPoint = new Vector3(patrolPoints[i].transform.position.x, patrolPoints[i].transform.position.y, patrolPoints[i].transform.position.z);
@@ -90,14 +91,25 @@ public class EnemyAI : MonoBehaviour
 
             Vector3 distanceToWalkPoint = transform.position - walkPoint;
 
-            if (distanceToWalkPoint.magnitude < 1.5f)
-            {
+                if (distanceToWalkPoint.magnitude < 1.5f)
+                {
                 Debug.Log("Walkpointiin saavuttu.");
-                reachedPoint = true;
+                nextPoint(i);
+                }
             }
         }
     }
 
+    private void nextPoint(int i)
+    {
+        if (i < 4)
+        {
+            i++;
+        } else {
+            i = 0;
+        }
+        walkPointSet = false;
+    }
 
 
     private void SearchWalkPoint()
@@ -143,6 +155,6 @@ public class EnemyAI : MonoBehaviour
         alreadyAttacked = false;
     }
 
-
-
 }
+
+
