@@ -1142,10 +1142,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   vision: {fileID: 3400016901069305760}
-  patrol: {fileID: 0}
+  patrolPoints: []
   walkPoint: {x: 0, y: 0, z: 0}
   walkPointRange: 15
   idleTime: 0
+  reachedPoint: 0
+  current: 0
   timeBetweenAttacks: 0
   timeToCalm: 5
   alreadyAttacked: 0

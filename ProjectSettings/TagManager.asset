@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Enemy
   - Vision
+  - Pole
+  - Reach
+  - Vault
+  - Slide
+  - Deep Jump
   layers:
   - Default
   - TransparentFX
@@ -16,7 +21,7 @@ TagManager:
   - Player
   - enemy
   - Ground
-  - 
+  - PatrolSpots
   - 
   - 
   - 

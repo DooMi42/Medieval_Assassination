@@ -15,21 +15,21 @@ public class EnemyAI : MonoBehaviour
     public EnemyVision vision;      // referenssi tötteröön vihollisen edessä (näkökenttä)
 
     public Transform[] patrolPoints;
+
+    public Vector3 pointLocation;
     
 
 
     //kävely ympäriinsä
     public Vector3 walkPoint;   // kertoo navmesh jutulle missä walck point on
     bool walkPointSet;
-    public float walkPointRange; // pois käytöstä mutta en jaksa kommentoida kaikkea pois 
     public int idleTime;    // kuinka kauan pahis pysyy paikallaan patrol pisteessä
-    public bool reachedPoint;   // lippu onko päässyt pisteeseen, ei välttämättä tarpeellinen?
     public int current;     // nykyinen patrol piste index
-
+    public bool travelDone = false;     // onko pahis pisteen luona?
 
     //hyökkääminen
     public float timeBetweenAttacks;
-    public float timeToCalm = 7f;   // aika, jossa vihollinen menee chase tilasta takaisin patrol tilaan
+    public int timeToCalm = 7;   // aika, jossa vihollinen menee chase tilasta takaisin patrol tilaan
     public bool alreadyAttacked;
 
     //states
@@ -38,9 +38,11 @@ public class EnemyAI : MonoBehaviour
 
     public bool playerInAttackRange, playerInSightRange;
 
+    
+
     private void Awake() 
     {
-        player = GameObject.Find("Player").transform;
+        player = GameObject.Find("PlayerModel").transform;
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -50,8 +52,9 @@ public class EnemyAI : MonoBehaviour
         //onko peluri -sihti- ja attack rangessa
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);  
+        
 
-        if (!vision.angry && !playerInAttackRange) Patrolling3();//Invoke(nameof(Patrolling3), idleTime);
+        if (!vision.angry && !playerInAttackRange) Patrolling();//Invoke(nameof(Patrolling3), idleTime);
         if (vision.angry && !playerInAttackRange) ChasePlayer(); 
         if (vision.angry && playerInAttackRange) AttackPlayer();
         if (vision.angry && !playerInAttackRange && !playerInSightRange) Invoke(nameof(Disengage), timeToCalm);
@@ -62,85 +65,55 @@ public class EnemyAI : MonoBehaviour
     private void Disengage()
     {
         vision.angry = false;
-    }
-    private void Patrolling() //randomisti toimiva patrol homma, ei ihanteellinen mutta toimiva 0_0
-    {
-        if (!walkPointSet) SearchWalkPoint();
-
-        if (walkPointSet)
-            agent.SetDestination(walkPoint);
-
-        Vector3 distanceToWalkPoint = transform.position - walkPoint;
-
-        //walkpointiin saavuttu
-        if (distanceToWalkPoint.magnitude < 1.5f)
-        {
-            walkPointSet = false;
-            Debug.Log("Walkpointiin saavuttu.");
-        }
-    
-    }
-    private void Patrolling2()      //for loopilla yritetty, en tiedä saako toimimaan
-    {
-        for (int i = 0; i < patrolPoints.Length; i++)
-        {   
-         if (!walkPointSet)
-            {
-            Debug.Log(i);
- 
-            walkPoint = new Vector3(patrolPoints[i].transform.position.x, patrolPoints[i].transform.position.y, patrolPoints[i].transform.position.z);
-
-            agent.SetDestination(walkPoint);
-
-            Vector3 distanceToWalkPoint = transform.position - walkPoint;
-
-                if (distanceToWalkPoint.magnitude < 1.5f)
-                {
-                Debug.Log("Walkpointiin saavuttu.");
-                nextPoint(i);
-                }
-            }
-        }
+        travelDone = false;
     }
 
-    private void Patrolling3()
+    private void Patrolling()
     {
         // netistä otettu :d
-        if (transform.position != patrolPoints[current].position)
-        {
-            walkPoint = patrolPoints[current].position;
-            agent.SetDestination(walkPoint);
-        } else {
-            current = (current + 1) % patrolPoints.Length;
-        }
-    }
+        //walkPoint = patrolPoints[current].position;
+        pointLocation = (patrolPoints[current].position);
+        walkPoint = new Vector3(pointLocation.x, pointLocation.y, pointLocation.z);
 
-    private void nextPoint(int i)   // patrol2 käyttämä homma
-    {
-        if (i < 4)
-        {
-            i++;
-        } else {
-            i = 0;
-        }
-        walkPointSet = false;
-    }
+        // dist tehty koska tötterö siirtää vihollisen keskipistettä.
+        float dist = Vector3.Distance(pointLocation, transform.position);
 
+        Debug.Log(dist);
 
-    private void SearchWalkPoint() // rando
-    {
-                //valitse satunnainen piste kentässä
-        float randomZ = Random.Range(-walkPointRange, walkPointRange);
-        float randomX = Random.Range(-walkPointRange, walkPointRange);
-
-        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
-
-        if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
-        {
-            walkPointSet = true;
-            Debug.DrawRay(walkPoint, -transform.up, Color.green);
+        //(Jos ei vielä mennyt seuraavaan pisteeseen)
+        if (travelDone == false){ 
             
-        }    
+        if   (dist > 1.4f)
+        {
+            agent.SetDestination(walkPoint);
+
+        } else {
+
+            // tämä hallinnoi mihin pisteeseen pelaaja menee
+            if (current < patrolPoints.Length - 1) {
+                current++;
+                Debug.Log("current on nyt " + current);
+                travelDone = true;
+            } else {
+                current = 0;
+                Debug.Log("current asetettu 0");
+                travelDone = true;
+            }
+
+
+            //current = (current + 1) % patrolPoints.Length;
+            }
+            // jos on saavuttu 'seuraavaan' pisteeseen
+            //-> pysyy paikallaan idletimen verran
+        } else {
+            Invoke(nameof(TravelTime), idleTime);
+        }
+    }
+
+    private void TravelTime()
+    {
+        // mene seuraavaan pisteeseen
+        travelDone = false;
     }
 
     private void ChasePlayer()
