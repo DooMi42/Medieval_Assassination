@@ -2248,15 +2248,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1993405640192379980, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
       propertyPath: m_Name
-      value: ENEMYNEW
-      objectReference: {fileID: 0}
-    - target: {fileID: 3015887084033186824, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: m_UseGravity
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3015887084033186824, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: m_IsKinematic
-      value: 1
+      value: ENEMY
       objectReference: {fileID: 0}
     - target: {fileID: 3282205052099926936, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
       propertyPath: m_RootOrder
@@ -2302,58 +2294,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5579789661505605713, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 10.42
-      objectReference: {fileID: 0}
-    - target: {fileID: 5579789661505605713, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -20.54
-      objectReference: {fileID: 0}
     - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 1702581203}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: idleTime
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: sightRange
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: timeToCalm
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: attackRange
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: walkPointRange
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: timeBetweenAttacks
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: whatIsPoint.m_Bits
-      value: 512
-      objectReference: {fileID: 0}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: whatIsGround.m_Bits
-      value: 256
-      objectReference: {fileID: 0}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: whatIsPlayer.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
-      propertyPath: patrolPoints.Array.size
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 7818773650046875071, guid: 91e0bba41efc59f4e939902209c6a81e, type: 3}
       propertyPath: patrolPoints.Array.data[0]
       value: 

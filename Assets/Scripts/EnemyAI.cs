@@ -64,53 +64,53 @@ public class EnemyAI : MonoBehaviour
 
     private void Disengage()
     {
+        //kysyy sight rangea toista kertaa että ei lähde muualle kun pelaaja ihan edessä
+        if (!playerInSightRange)
+        {
         vision.angry = false;
-        travelDone = false;
+        //travelDone = true;
+        }
     }
 
     private void Patrolling()
     {
         // netistä otettu :d
-        //walkPoint = patrolPoints[current].position;
         pointLocation = (patrolPoints[current].position);
         walkPoint = new Vector3(pointLocation.x, pointLocation.y, pointLocation.z);
 
         // dist tehty koska tötterö siirtää vihollisen keskipistettä.
         float dist = Vector3.Distance(pointLocation, transform.position);
 
-        Debug.Log(dist);
+        //Debug.Log(dist);
 
         //(Jos ei vielä mennyt seuraavaan pisteeseen)
         if (travelDone == false){ 
             
-        if   (dist > 1.4f)
-        {
-            agent.SetDestination(walkPoint);
+            if   (dist > 1.4f)
+            {
+                agent.SetDestination(walkPoint);
 
-        } else {
-
-            // tämä hallinnoi mihin pisteeseen pelaaja menee
-            if (current < patrolPoints.Length - 1) {
-                current++;
-                Debug.Log("current on nyt " + current);
-                travelDone = true;
             } else {
-                current = 0;
-                Debug.Log("current asetettu 0");
-                travelDone = true;
-            }
 
-
-            //current = (current + 1) % patrolPoints.Length;
+                // tämä hallinnoi mihin pisteeseen pelaaja menee
+                if (current < patrolPoints.Length - 1) {
+                    current++;
+                    Debug.Log("current on nyt " + current);
+                    travelDone = true;
+               } else {
+                    current = 0;
+                    Debug.Log("current asetettu 0");
+                    travelDone = true;
+                }
             }
             // jos on saavuttu 'seuraavaan' pisteeseen
             //-> pysyy paikallaan idletimen verran
         } else {
-            Invoke(nameof(TravelTime), idleTime);
+            Invoke(nameof(TravellingTime), idleTime);
         }
     }
 
-    private void TravelTime()
+    private void TravellingTime()
     {
         // mene seuraavaan pisteeseen
         travelDone = false;
