@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyAI : MonoBehaviour
+public class EnemyAIRay : MonoBehaviour
 {
-/* kommentoitu pois koska ray on tulevaisuus
+
     public NavMeshAgent agent;
 
     public Transform player;
 
     public LayerMask whatIsGround, whatIsPlayer;    // kertoo navmeshille mikä on peluri ja mikä on maa 
-    
-    public EnemyVision vision;      // referenssi tötteröön vihollisen edessä (näkökenttä)
 
     public Transform[] patrolPoints;
 
@@ -31,6 +29,7 @@ public class EnemyAI : MonoBehaviour
     public float timeBetweenAttacks;
     public int timeToCalm = 7;   // aika, jossa vihollinen menee chase tilasta takaisin patrol tilaan
     public bool alreadyAttacked;
+    public bool angry = false;
 
     //states
     public float attackRange, sightRange;   // sight range on vihun ympärillä oleva alue, joka määrittää jatkaako vihollinen-
@@ -55,10 +54,10 @@ public class EnemyAI : MonoBehaviour
         
         VisionRay();
 
-        if (!vision.angry && !playerInAttackRange) Patrolling();//Invoke(nameof(Patrolling3), idleTime);
-        if (vision.angry && !playerInAttackRange) ChasePlayer(); 
-        if (vision.angry && playerInAttackRange) AttackPlayer();
-        if (vision.angry && !playerInAttackRange && !playerInSightRange) Invoke(nameof(Disengage), timeToCalm);
+        if (!angry && !playerInAttackRange) Patrolling();//Invoke(nameof(Patrolling3), idleTime);
+        if (angry && !playerInAttackRange) ChasePlayer(); 
+        if (angry && playerInAttackRange) AttackPlayer();
+        if (angry && !playerInAttackRange && !playerInSightRange) Invoke(nameof(Disengage), timeToCalm);
         
     }
     private void VisionRay()
@@ -67,6 +66,7 @@ public class EnemyAI : MonoBehaviour
         Ray ray = new Ray (transform.position, transform.forward);
         if (Physics.Raycast(ray, out hitInfo, 30, whatIsPlayer)) {
             Debug.DrawLine(ray.origin, hitInfo.point, Color.red);
+            angry = true;
         } else {
             Debug.DrawLine(ray.origin, ray.origin + ray.direction * 30, Color.green);
         }
@@ -78,7 +78,7 @@ public class EnemyAI : MonoBehaviour
         //kysyy sight rangea toista kertaa että ei lähde muualle kun pelaaja ihan edessä
         if (!playerInSightRange)
         {
-        vision.angry = false;
+        angry = false;
         //travelDone = true;
         }
     }
@@ -153,7 +153,7 @@ public class EnemyAI : MonoBehaviour
     {
         alreadyAttacked = false;
     }
-*/
+
 }
 
 
