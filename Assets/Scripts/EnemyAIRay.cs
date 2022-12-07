@@ -10,7 +10,7 @@ public class EnemyAIRay : MonoBehaviour
 
     public Transform player;
 
-    public LayerMask whatIsGround, whatIsPlayer;    // kertoo navmeshille mikä on peluri ja mikä on maa 
+    public LayerMask whatIsGround, whatIsPlayer;    // kertoo navmeshille ja raylle mikä on peluri ja mikä on maa 
 
     public Transform[] patrolPoints;
 
@@ -22,14 +22,14 @@ public class EnemyAIRay : MonoBehaviour
     public Vector3 walkPoint;   // kertoo navmesh jutulle missä walck point on
     bool walkPointSet;
     public int idleTime;    // kuinka kauan pahis pysyy paikallaan patrol pisteessä
-    public int current;     // nykyinen patrol piste index
+    public int current = 0;    // nykyinen patrol piste index
     public bool travelDone = false;     // onko pahis pisteen luona?
 
     //hyökkääminen
     public float timeBetweenAttacks;
     public int timeToCalm = 7;   // aika, jossa vihollinen menee chase tilasta takaisin patrol tilaan
     public bool alreadyAttacked;
-    public bool angry = false;
+    public bool angry = false;  // toisessa versiossa angry on EnemyVision.cs
 
     //states
     public float attackRange, sightRange;   // sight range on vihun ympärillä oleva alue, joka määrittää jatkaako vihollinen-
@@ -60,11 +60,16 @@ public class EnemyAIRay : MonoBehaviour
         if (angry && !playerInAttackRange && !playerInSightRange) Invoke(nameof(Disengage), timeToCalm);
         
     }
+
     private void VisionRay()
     {
         RaycastHit hitInfo;
-        Ray ray = new Ray (transform.position, transform.forward);
-        if (Physics.Raycast(ray, out hitInfo, 30, whatIsPlayer)) {
+        Vector3 moveRayUp = new Vector3(0, 1, 0);
+        Ray ray = new Ray (transform.position + moveRayUp, transform.forward);
+
+        if (Physics.Raycast(ray, out hitInfo, 30, whatIsGround)) {
+            Debug.DrawLine(ray.origin, hitInfo.point, Color.blue);
+        } else if(Physics.Raycast(ray, out hitInfo, 30, whatIsPlayer)) {
             Debug.DrawLine(ray.origin, hitInfo.point, Color.red);
             angry = true;
         } else {
@@ -90,6 +95,7 @@ public class EnemyAIRay : MonoBehaviour
         walkPoint = new Vector3(pointLocation.x, pointLocation.y, pointLocation.z);
 
         // dist tehty koska tötterö siirtää vihollisen keskipistettä.
+        // emt onko tarpeellinen ilman tötteröä mutta en jaksa muuttaa
         float dist = Vector3.Distance(pointLocation, transform.position);
 
         //Debug.Log(dist);
@@ -108,7 +114,7 @@ public class EnemyAIRay : MonoBehaviour
                     current++;
                     Debug.Log("current on nyt " + current);
                     travelDone = true;
-               } else {
+                } else {
                     current = 0;
                     Debug.Log("current asetettu 0");
                     travelDone = true;
