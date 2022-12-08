@@ -37,6 +37,7 @@ public class EnemyAIRay : MonoBehaviour
 
     public bool playerInAttackRange, playerInSightRange;
 
+    public int seeing = 0;
     
 
     private void Awake() 
@@ -47,7 +48,7 @@ public class EnemyAIRay : MonoBehaviour
 
     private void Update()
     {
-        Ray ray = new Ray (transform.position, transform.forward);
+
         //onko peluri -sihti- ja attack rangessa
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);  
@@ -61,19 +62,57 @@ public class EnemyAIRay : MonoBehaviour
         
     }
 
+
+    private void VisionRay2() 
+    {
+        switch (seeing)
+        {
+            case '1' :
+            Debug.Log("I am seeing the ground or walls");
+            break;
+            
+            case '2' :
+            Debug.Log("I am seeing the player!");
+            break;
+
+            default : 
+            Debug.Log("I am seeing the vast horizon");
+            break;
+        }
+    }
+
     private void VisionRay()
     {
+        // drawit ei toimi mutta raycast toimii..?
         RaycastHit hitInfo;
         Vector3 moveRayUp = new Vector3(0, 1, 0);
         Ray ray = new Ray (transform.position + moveRayUp, transform.forward);
 
-        if (Physics.Raycast(ray, out hitInfo, 30, whatIsGround)) {
-            Debug.DrawLine(ray.origin, hitInfo.point, Color.blue);
-        } else if(Physics.Raycast(ray, out hitInfo, 30, whatIsPlayer)) {
-            Debug.DrawLine(ray.origin, hitInfo.point, Color.red);
-            angry = true;
+        if (Physics.Raycast(ray, out hitInfo, 30, whatIsGround)) 
+        {
+        seeing = 1;
+        } else if (Physics.Raycast(ray, out hitInfo, 30, whatIsPlayer))
+        {
+        seeing = 2;
+        angry = true;
         } else {
-            Debug.DrawLine(ray.origin, ray.origin + ray.direction * 30, Color.green);
+            // ei näe seinää eikä pelaajaa :)
+            seeing = 0;
+        }
+
+            switch (seeing)
+        {
+            case 1 :
+            Debug.Log("I am seeing the ground or walls");
+            break;
+            
+            case 2 :
+            Debug.Log("I am seeing the player!");
+            break;
+
+            default : 
+            Debug.Log("I am seeing the vast horizon");
+            break;
         }
     }
 
