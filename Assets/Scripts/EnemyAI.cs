@@ -5,7 +5,8 @@ using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-/* kommentoitu pois koska ray on tulevaisuus
+    /*
+ kommentoitu pois koska ray on tulevaisuus
     public NavMeshAgent agent;
 
     public Transform player;
@@ -53,23 +54,12 @@ public class EnemyAI : MonoBehaviour
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);  
         
-        VisionRay();
 
         if (!vision.angry && !playerInAttackRange) Patrolling();//Invoke(nameof(Patrolling3), idleTime);
         if (vision.angry && !playerInAttackRange) ChasePlayer(); 
         if (vision.angry && playerInAttackRange) AttackPlayer();
         if (vision.angry && !playerInAttackRange && !playerInSightRange) Invoke(nameof(Disengage), timeToCalm);
         
-    }
-    private void VisionRay()
-    {
-        RaycastHit hitInfo;
-        Ray ray = new Ray (transform.position, transform.forward);
-        if (Physics.Raycast(ray, out hitInfo, 30, whatIsPlayer)) {
-            Debug.DrawLine(ray.origin, hitInfo.point, Color.red);
-        } else {
-            Debug.DrawLine(ray.origin, ray.origin + ray.direction * 30, Color.green);
-        }
     }
 
 
