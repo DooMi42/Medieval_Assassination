@@ -44,14 +44,14 @@ public class Timer : MonoBehaviour
             int minutes = (int)(seconds/ 60f);
 
             seconds -= minutes * 60;
-            jsonTimer = $"PB: {minutes}:{seconds}";
+            jsonTimer = $"Personal Best: {minutes}:{seconds}";
         }
 
     }
 
     public void UpdateUI()
     {
-        timerText.text = $"This run: {timerMinutes}:{timerSeconds}";
+        timerText.text = $"Current Run: {timerMinutes}:{timerSeconds}";
     }
 
     public void TimerLogic()
